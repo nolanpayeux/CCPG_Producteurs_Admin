@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#b23228">
+  <title>Produits locaux | CCPG</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <img class="brand-logo" src="assets/ccpg-logo.png" alt="Logo de la Communauté de communes du Pont du Gard">
+      </div>
+
+      <h1>Consommer local,<br><em>près de chez vous.</em></h1>
+      <p class="intro">Explorez les productions et points de vente du territoire de la Communauté de communes du Pont du Gard.</p>
+
+      <div class="search-wrap">
+        <label for="search">Rechercher un producteur, une commune…</label>
+        <input id="search" autocomplete="off" type="search" placeholder="Nom, adresse, produit…">
+      </div>
+
+      <div class="section-head">
+        <h2>Fonds de carte</h2>
+      </div>
+      <div class="basemap-switch" role="tablist" aria-label="Choix du fond de carte">
+        <button id="btn-basemap-light" class="basemap-btn active" type="button" data-map="light">Plan épuré</button>
+        <button id="btn-basemap-ortho" class="basemap-btn" type="button" data-map="ortho">Orthophoto</button>
+      </div>
+
+      <div class="geo-options">
+        <label class="geo-label" for="commune-select">Filtrer par commune</label>
+        <select id="commune-select" class="geo-select" aria-label="Sélectionner une commune">
+          <option value="">Toutes les communes de la CCPG</option>
+        </select>
+        <label class="water-toggle"><input type="checkbox" id="water-toggle"><span>Afficher le Rhône et le Gardon</span></label>
+        <p id="water-status" class="geo-status" role="status"></p>
+        <label class="water-toggle"><input type="checkbox" id="road-toggle"><span>Afficher les grands axes routiers</span></label>
+        <p id="road-status" class="geo-status" role="status"></p>
+      </div>
+
+      <div class="filter-head">
+        <h2>Productions</h2>
+        <button id="reset" class="link-button" type="button">Tout afficher</button>
+      </div>
+      <div id="filters" class="filters"></div>
+
+      <div class="bottom">
+        <p id="counter" aria-live="polite">Chargement des données…</p>
+        <button id="reframe" type="button" class="secondary">⌖ &nbsp; Recentrer la carte</button>
+        <p id="territory-status" class="status">Chargement du contour des communes…</p>
+        <p class="note">Les informations sont indicatives. Vérifiez les horaires avant déplacement.</p>
+      </div>
+    </aside>
+
+    <main class="map-wrap">
+      <div id="map" role="application" aria-label="Carte interactive des productions locales"></div>
+      <button class="edit-launch" id="edit-launch" type="button">✎ Mode édition</button>
+      <button class="mobile-toggle" id="mobile-toggle" type="button" aria-expanded="false" aria-controls="sidebar">☰ &nbsp; Catégories & recherche</button>
+      <div class="map-chip" id="zoom-chip">Carte des producteurs locaux</div>
+      <button class="print-entry" id="open-print" type="button">⎙ &nbsp; Préparer un PDF</button>
+    </main>
+  </div>
+
+  <div class="print-workspace" id="print-workspace" aria-hidden="true">
+    <div class="print-toolbar">
+      <div><strong>Préparer l'export PDF</strong><p>Déplacez la carte, zoomez et choisissez le format avant l'impression.</p></div>
+      <label for="print-orientation">Disposition
+        <select id="print-orientation"><option value="landscape">A4 paysage</option><option value="portrait">A4 portrait</option></select>
+      </label>
+      <button type="button" class="print-action" id="print-now">Imprimer / Enregistrer en PDF</button>
+      <button type="button" id="print-close">✕ Quitter</button>
+    </div>
+    <div class="print-canvas">
+      <div class="print-sheet landscape" id="print-sheet">
+        <header class="print-sheet-header">
+          <img src="assets/ccpg-logo.png" alt="Communauté de communes du Pont du Gard">
+          <div><strong>Consommer local, près de chez vous.</strong><span>Carte des producteurs du territoire</span></div>
+        </header>
+        <div class="print-body">
+          <div class="print-map-holder" id="print-map-holder">
+            <div class="print-north-arrow" aria-hidden="true"><span>▲</span><small>N</small></div>
+          </div>
+          <aside class="print-sidepanel" aria-label="Légende de la carte imprimée">
+            <section class="print-legend">
+              <h3>Légende</h3>
+              <p class="print-legend-note" id="print-legend-note">Catégories visibles dans l’emprise affichée.</p>
+              <div class="print-legend-list" id="print-legend-list"></div>
+            </section>
+          </aside>
+        </div>
+        <footer class="print-sheet-footer"><span>Communauté de communes du Pont du Gard — Carte des producteurs locaux</span><span id="print-date"></span></footer>
+      </div>
+    </div>
+  </div>
+  <section id="edit-panel" class="edit-panel" hidden aria-label="Édition locale des producteurs">
+    <div class="edit-panel-head"><strong>Édition locale des producteurs</strong><button id="edit-close" type="button" aria-label="Fermer">×</button></div>
+    <p class="edit-warning">Mode de travail local : rien n'est sauvegardé sur GitHub avant export et publication.</p>
+    <div class="edit-actions">
+      <button type="button" id="edit-add">+ Ajouter un point</button>
+      <button type="button" id="group-new">+ Créer un groupe</button>
+      <button type="button" id="edit-undo">↶ Annuler</button>
+      <button type="button" id="edit-export">⬇ Exporter GeoJSON</button>
+    </div>
+    <p id="edit-status" role="status">Cliquez sur un producteur pour le modifier, ou ajoutez un nouveau point.</p>
+    <div class="group-editor">
+      <label for="group-select">Gestion des groupes</label>
+      <select id="group-select"><option value="">— Choisir un groupe —</option></select>
+      <div id="group-details" hidden>
+        <label>Nom du groupe<input id="group-name" maxlength="250"></label>
+        <div class="edit-coords"><label>Latitude centrale<input id="group-lat" type="number" step="any"></label><label>Longitude centrale<input id="group-lon" type="number" step="any"></label></div>
+        <p class="group-members" id="group-members"></p>
+        <div class="edit-actions"><button type="button" id="group-save">Enregistrer le groupe</button><button type="button" id="group-dissolve">Dissoudre le groupe</button></div>
+      </div>
+      <p class="group-help">Pour ajouter une fiche à un groupe, ouvrez sa fiche dans le mode édition et choisissez son rattachement ci-dessous. Les groupes « auto » deviennent permanents au premier enregistrement.</p>
+    </div>
+    <form id="edit-form" hidden>
+      <label>Nom du producteur *<input name="name" required maxlength="250"></label>
+      <label>Catégorie *<select name="categorie" required id="edit-category"></select></label>
+      <label>Appartenance au groupe<select id="edit-site"><option value="">Aucun rattachement explicite</option></select></label>
+      <label>Adresse<input name="Adresse" maxlength="400"></label>
+      <label>Téléphone<input name="tel" maxlength="100"></label>
+      <label>Site internet / contact<input name="liens" maxlength="500"></label>
+      <label>Description<textarea name="description" rows="3"></textarea></label>
+      <div class="edit-coords">
+        <label>Latitude<input name="lat" type="number" step="any" min="-90" max="90" required></label>
+        <label>Longitude<input name="lon" type="number" step="any" min="-180" max="180" required></label>
+      </div>
+      <button type="button" id="edit-locate">⌖ Positionner sur la carte</button>
+      <div class="edit-form-actions"><button type="submit">Enregistrer</button><button type="button" id="edit-cancel">Annuler</button><button class="delete" type="button" id="edit-delete">Supprimer</button></div>
+    </form>
+  </section>
+  <!-- V11.1 : confirmation de sauvegarde locale, distincte de la publication. -->
+  <div id="edit-saved-modal" class="edit-saved-backdrop" hidden>
+    <section class="edit-saved-dialog" role="dialog" aria-modal="true" aria-labelledby="edit-saved-title" aria-describedby="edit-saved-desc" tabindex="-1">
+      <div class="edit-saved-symbol" aria-hidden="true">✓</div>
+      <h2 id="edit-saved-title">Modification enregistrée localement</h2>
+      <p id="edit-saved-desc">Votre modification est visible uniquement dans cette session. <strong>Elle n’est pas publiée sur le site.</strong></p>
+      <p>Seul l’administrateur peut valider les modifications et les mettre en ligne après export du GeoJSON et mise à jour sur GitHub.</p>
+      <button id="edit-saved-ok" type="button">J’ai compris</button>
+    </section>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@turf/turf@7.2.0/turf.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

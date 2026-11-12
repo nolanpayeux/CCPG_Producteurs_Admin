@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Administration collaborative — Producteurs locaux CCPG</title>
+  <link rel="stylesheet" href="administration.css">
+</head>
+<body>
+<header><div class="brand"><strong>CCPG</strong><span>Producteurs locaux · Administration collaborative</span></div><p id="identity">Vérification de la session…</p></header>
+<main>
+  <div class="intro"><h1>Proposer et valider des modifications</h1>
+    <p>Les propositions sont enregistrées dans Cloudflare D1 et ne modifient pas le fichier GeoJSON public actuellement diffusé. Les validations portent uniquement sur la base de test tant que la bascule publique n'est pas activée.</p></div>
+  <p id="status" class="status" role="status">Chargement…</p>
+  <div class="columns">
+    <section class="panel">
+      <h2>Fiches producteurs</h2>
+      <label>Rechercher<input id="filter" placeholder="Nom, commune, catégorie" autocomplete="off"></label>
+      <label>Fiche à modifier<select id="feature-select"><option value="">— Nouvelle fiche —</option></select></label>
+      <div class="fields">
+        <label>Nom du producteur *<input id="name" maxlength="250"></label>
+        <label>Catégorie *<select id="categorie"></select></label>
+        <label>Adresse<input id="adresse" maxlength="400"></label>
+        <label>Téléphone<input id="tel" maxlength="100"></label>
+        <label>Site internet / contact<input id="liens" maxlength="500"></label>
+        <label>Description<textarea id="description" rows="3"></textarea></label>
+        <label>Identifiant de groupe<input id="site_id" placeholder="Laisser vide si aucun groupe"></label>
+        <label>Nom du groupe<input id="site_nom" placeholder="Ex. Les Vergers de l’Ilon"></label>
+        <div class="coords"><label>Latitude *<input id="lat" type="number" step="any"></label><label>Longitude *<input id="lon" type="number" step="any"></label></div>
+      </div>
+      <p class="hint">Un groupe est actuellement représenté par les attributs <code>site_id</code> et <code>site_nom</code> des fiches. Le formulaire préserve leurs autres attributs.</p>
+      <div class="actions"><button id="submit" class="primary">Soumettre la proposition</button><button id="delete" class="danger" disabled>Proposer la suppression</button></div>
+      <p class="hint">À cette étape, le formulaire n’édite pas la carte Leaflet elle-même. Il sert à tester le circuit collaboratif avant son intégration au mode édition existant.</p>
+    </section>
+    <section class="panel">
+      <h2>Propositions de modification</h2>
+      <div id="proposals" class="proposal-list"></div>
+    </section>
+  </div>
+</main>
+<script src="administration.js" defer></script>
+</body></html>
