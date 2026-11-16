@@ -3,9 +3,17 @@
   "name": "ccpg-producteurs-admin",
   "main": "src/worker.js",
   "compatibility_date": "2026-11-03",
+  "keep_vars": true,
   "assets": {
     "directory": "./public",
     "binding": "ASSETS",
     "run_worker_first": ["/api/*"]
-  }
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "ccpg-producteurs-pilote",
+      "database_id": "IDENTIFIANT_REEL_DE_LA_BASE"
+    }
+  ]
 }
