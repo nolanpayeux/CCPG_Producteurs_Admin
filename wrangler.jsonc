@@ -1,3 +1,4 @@
+
 {
   "$schema": "./node_modules/wrangler/config-schema.json",
   "name": "ccpg-producteurs-admin",
@@ -13,7 +14,7 @@
     {
       "binding": "DB",
       "database_name": "ccpg-producteurs-pilote",
-      "database_id": "IDENTIFIANT_REEL_DE_LA_BASE"
+      "database_id": "60bb6620-342f-401a-a3c1-5c0e3b4c1ddc"
     }
   ]
 }
