@@ -28,6 +28,19 @@ function chooseHandler(path, method, context) {
 export default {
   async fetch(request, env, executionContext) {
     const url = new URL(request.url);
+   if (url.pathname === '/api/diagnostic-config') {
+  console.log('Diagnostic configuration CCPG', {
+    ACCESS_AUD: Boolean(env.ACCESS_AUD),
+    ACCESS_TEAM_DOMAIN: Boolean(env.ACCESS_TEAM_DOMAIN),
+    ADMIN_EMAIL: Boolean(env.ADMIN_EMAIL),
+    EDITOR_EMAILS: Boolean(env.EDITOR_EMAILS),
+    DB: Boolean(env.DB)
+  });
+
+  return Response.json({
+    diagnostic: 'Consulter les journaux Workers'
+  });
+}
 
     // DIAGNOSTIC TEMPORAIRE : vérifier la présence des variables Cloudflare.
     // Ne renvoie jamais les valeurs, uniquement true ou false.
